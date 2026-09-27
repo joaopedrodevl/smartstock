@@ -43,7 +43,7 @@ jwt.private.key: classpath:app.key
 jwt.public.key: classpath:app.pub
 ```
 
-Os arquivos `app.key` e `app.pub` já existem no repositório para desenvolvimento. Para **gerar um novo par de chaves** (recomendado se forem expiradas ou se você quiser chaves próprias):
+Os arquivos `app.key` e `app.pub` **não são versionados** (estão no `.gitignore`). Antes de subir o backend pela primeira vez, gere o par de chaves:
 
 ```bash
 # Gera a chave privada RSA 2048 bits no formato PKCS#8 (exigido pelo Spring)
@@ -60,9 +60,20 @@ Coloque ambos em `smart/src/main/resources/`, respeitando o formato:
 
 Elas são injetadas como `RSAPrivateKey`/`RSAPublicKey` em `infra/config/RestConfig.java` para configurar o `JwtEncoder`/`JwtDecoder` (Nimbus).
 
-> ⚠️ As chaves do repositório são apenas para **desenvolvimento**. Nunca reutilize em produção e não versione chaves privadas reais.
+> ⚠️ As chaves ficam fora do versionamento por segurança — qualquer pessoa pode gerar as suas locais com os comandos acima. Nunca versione chaves privadas reais.
 
-### 3.2 Rodando
+### 3.2 Configuração da aplicação
+
+O `application.properties` também **não é versionado** (contém credenciais). Antes da primeira execução, copie o exemplo:
+
+```bash
+cd smart
+cp src/main/resources/application.properties.example src/main/resources/application.properties
+```
+
+Os valores do exemplo já apontam para o PostgreSQL do `compose.yaml` (`mydatabase`/`myuser`/`secret` em `localhost:5432`), ajuste se necessário.
+
+### 3.3 Rodando
 
 ```bash
 cd smart
@@ -74,7 +85,7 @@ cd smart
 - Swagger UI: `http://localhost:8080/swagger-ui.html`
 - WebSocket de embarcados: `ws://localhost:8080/ws/embarcado`
 
-### 3.3 Usuário admin inicial (seed)
+### 3.4 Usuário admin inicial (seed)
 
 O migration `002-seed-admin-inicial.sql` cria um usuário admin:
 
@@ -85,7 +96,7 @@ senha: 123456
 
 Login via `POST /v1/token/admin` (retorna cookies `access_token` + `XSRF-TOKEN`).
 
-### 3.4 Testes
+### 3.5 Testes
 
 ```bash
 ./gradlew test

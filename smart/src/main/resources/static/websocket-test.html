@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>SmartStock - Teste WebSocket</title>
+    <style>
+        body { font-family: monospace; margin: 20px; background: #1a1a1a; color: #0f0; }
+        h1 { color: #0ff; }
+        .panel { border: 1px solid #0f0; padding: 15px; margin: 10px 0; border-radius: 5px; }
+        .log { background: #000; height: 300px; overflow-y: auto; padding: 10px; border: 1px solid #333; }
+        .log p { margin: 2px 0; }
+        .log .enviado { color: #ff0; }
+        .log .recebido { color: #0f0; }
+        .log .erro { color: #f00; }
+        input, button, select { margin: 5px; padding: 8px; background: #222; color: #0f0; border: 1px solid #0f0; }
+        button { cursor: pointer; }
+        button:hover { background: #0f0; color: #000; }
+        .status { padding: 5px 10px; border-radius: 3px; }
+        .conectado { background: #0f0; color: #000; }
+        .desconectado { background: #f00; color: #fff; }
+    </style>
+</head>
+<body>
+    <h1>SmartStock - Teste WebSocket Embarcado</h1>
+
+    <div class="panel">
+        <h3>1. Conexao</h3>
+        <input type="text" id="wsUrl" value="ws://localhost:8080/ws/embarcado" size="50">
+        <button onclick="conectar()">Conectar</button>
+        <button onclick="desconectar()">Desconectar</button>
+        <span id="status" class="status desconectado">DESCONECTADO</span>
+    </div>
+
+    <div class="panel">
+        <h3>2. Registrar Embarcado</h3>
+        <input type="text" id="chavePublica" placeholder="Chave Publica do ESP32" size="40">
+        <button onclick="registrar()">Registrar</button>
+    </div>
+
+    <div class="panel">
+        <h3>3. Simular Leitura RFID</h3>
+        <input type="text" id="leituraId" placeholder="UUID da Leitura" size="40">
+        <input type="text" id="codigoRfid" placeholder="Codigo RFID lido" value="ABC123">
+        <button onclick="enviarLeitura()">Enviar Leitura</button>
+    </div>
+
+    <div class="panel">
+        <h3>4. Mensagem Customizada</h3>
+        <textarea id="mensagemCustom" rows="3" cols="60">{"tipo":"REGISTRO","chavePublica":"sua-chave-aqui"}</textarea>
+        <br>
+        <button onclick="enviarCustom()">Enviar</button>
+    </div>
+
+    <div class="panel">
+        <h3>Log de Mensagens</h3>
+        <div id="log" class="log"></div>
+        <button onclick="limparLog()">Limpar Log</button>
+    </div>
+
+    <script>
+        let ws = null;
+
+        function log(msg, tipo = 'info') {
+            const logDiv = document.getElementById('log');
+            const p = document.createElement('p');
+            p.className = tipo;
+            p.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+            logDiv.appendChild(p);
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        function conectar() {
+            const url = document.getElementById('wsUrl').value;
+            log(`Conectando a ${url}...`);
+
+            ws = new WebSocket(url);
+
+            ws.onopen = () => {
+                log('Conectado!', 'enviado');
+                document.getElementById('status').textContent = 'CONECTADO';
+                document.getElementById('status').className = 'status conectado';
+            };
+
+            ws.onmessage = (event) => {
+                log(`Recebido: ${event.data}`, 'recebido');
+                const msg = JSON.parse(event.data);
+                if (msg.tipo === 'SOLICITAR_LEITURA') {
+                    document.getElementById('leituraId').value = msg.leituraId;
+                    log(`Leitura solicitada! ID: ${msg.leituraId}. Aproxime a tag RFID do leitor.`, 'recebido');
+                }
+            };
+
+            ws.onclose = () => {
+                log('Desconectado', 'erro');
+                document.getElementById('status').textContent = 'DESCONECTADO';
+                document.getElementById('status').className = 'status desconectado';
+            };
+
+            ws.onerror = (error) => {
+                log(`Erro: ${error}`, 'erro');
+            };
+        }
+
+        function desconectar() {
+            if (ws) {
+                ws.close();
+                log('Desconectado pelo usuario');
+            }
+        }
+
+        function registrar() {
+            const chave = document.getElementById('chavePublica').value;
+            if (!chave) { log('Informe a chave publica', 'erro'); return; }
+            const msg = JSON.stringify({ tipo: 'REGISTRO', chavePublica: chave });
+            ws.send(msg);
+            log(`Enviado: ${msg}`, 'enviado');
+        }
+
+        function enviarLeitura() {
+            const leituraId = document.getElementById('leituraId').value;
+            const codigo = document.getElementById('codigoRfid').value;
+            if (!leituraId || !codigo) { log('Preencha leituraId e codigoRfid', 'erro'); return; }
+            const msg = JSON.stringify({ tipo: 'RFID_LIDO', leituraId: leituraId, codigoRfid: codigo });
+            ws.send(msg);
+            log(`Enviado: ${msg}`, 'enviado');
+        }
+
+        function enviarCustom() {
+            const msg = document.getElementById('mensagemCustom').value;
+            try {
+                JSON.parse(msg);
+                ws.send(msg);
+                log(`Enviado: ${msg}`, 'enviado');
+            } catch (e) {
+                log('JSON invalido', 'erro');
+            }
+        }
+
+        function limparLog() {
+            document.getElementById('log').innerHTML = '';
+        }
+    </script>
+</body>
+</html>

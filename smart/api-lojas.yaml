@@ -1,0 +1,317 @@
+openapi: 3.0.3
+info:
+  title: SmartStock - Mini Mercados de Condomínio
+  description: API para gerenciamento de lojas (mini mercados) de condomínio
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8080
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: apiKey
+      in: header
+      name: Cookie
+      description: "JWT access_token nos cookies: access_token=<token>"
+
+  schemas:
+    EnderecoRequest:
+      type: object
+      required:
+        - cep
+        - logradouro
+        - numero
+        - bairro
+        - cidade
+        - estado
+      properties:
+        cep:
+          type: string
+          example: "01310100"
+        logradouro:
+          type: string
+          example: "Avenida Paulista"
+        numero:
+          type: string
+          example: "1000"
+        complemento:
+          type: string
+          example: "Sala 1"
+        bairro:
+          type: string
+          example: "Bela Vista"
+        cidade:
+          type: string
+          example: "São Paulo"
+        estado:
+          type: string
+          example: "SP"
+        referencia:
+          type: string
+          example: "Em frente ao metrô"
+
+    LojaRequest:
+      type: object
+      required:
+        - cnpj
+        - nomeFantasia
+        - endereco
+      properties:
+        cnpj:
+          type: string
+          example: "12345678000190"
+        nomeFantasia:
+          type: string
+          example: "Mini Mercado Condomínio Central"
+        razaoSocial:
+          type: string
+          example: "Mini Mercado Central LTDA"
+        telefone:
+          type: string
+          example: "11999998888"
+        ehMatriz:
+          type: boolean
+          example: true
+        endereco:
+          $ref: '#/components/schemas/EnderecoRequest'
+
+    EnderecoResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        cep:
+          type: string
+          example: "01310100"
+        logradouro:
+          type: string
+          example: "Avenida Paulista"
+        numero:
+          type: string
+          example: "1000"
+        complemento:
+          type: string
+          example: "Sala 1"
+        bairro:
+          type: string
+          example: "Bela Vista"
+        cidade:
+          type: string
+          example: "São Paulo"
+        estado:
+          type: string
+          example: "SP"
+        referencia:
+          type: string
+          example: "Em frente ao metrô"
+
+    LojaResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        cnpj:
+          type: string
+          example: "12345678000190"
+        nomeFantasia:
+          type: string
+          example: "Mini Mercado Condomínio Central"
+        razaoSocial:
+          type: string
+          example: "Mini Mercado Central LTDA"
+        telefone:
+          type: string
+          example: "11999998888"
+        ehMatriz:
+          type: boolean
+          example: true
+        ativo:
+          type: boolean
+          example: true
+        endereco:
+          $ref: '#/components/schemas/EnderecoResponse'
+
+    ErroResponse:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        status:
+          type: integer
+        error:
+          type: string
+        message:
+          type: string
+        path:
+          type: string
+
+paths:
+  /admin/lojas:
+    post:
+      tags: [Lojas]
+      summary: Criar nova loja
+      description: Cria uma nova loja com endereço vinculado ao administrador autenticado
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LojaRequest'
+            example:
+              cnpj: "12345678000190"
+              nomeFantasia: "Mini Mercado Condomínio Central"
+              razaoSocial: "Mini Mercado Central LTDA"
+              telefone: "11999998888"
+              ehMatriz: true
+              endereco:
+                cep: "01310100"
+                logradouro: "Avenida Paulista"
+                numero: "1000"
+                complemento: "Sala 1"
+                bairro: "Bela Vista"
+                cidade: "São Paulo"
+                estado: "SP"
+                referencia: "Em frente ao metrô"
+      responses:
+        '200':
+          description: Loja criada com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LojaResponse'
+        '400':
+          description: CNPJ já cadastrado ou já existe matriz
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErroResponse'
+
+    get:
+      tags: [Lojas]
+      summary: Listar lojas do administrador
+      description: Retorna todas as lojas vinculadas ao administrador autenticado
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Lista de lojas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LojaResponse'
+
+  /admin/lojas/{id}:
+    get:
+      tags: [Lojas]
+      summary: Buscar loja por ID
+      description: Retorna os dados de uma loja específica
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+          example: 1
+      responses:
+        '200':
+          description: Loja encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LojaResponse'
+        '400':
+          description: Loja não encontrada ou não pertence ao administrador
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErroResponse'
+
+    put:
+      tags: [Lojas]
+      summary: Atualizar loja
+      description: Atualiza os dados da loja e seu endereço
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+          example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LojaRequest'
+            example:
+              cnpj: "12345678000190"
+              nomeFantasia: "Mini Mercado Condomínio Central - Atualizado"
+              razaoSocial: "Mini Mercado Central LTDA"
+              telefone: "11988887777"
+              ehMatriz: true
+              endereco:
+                cep: "01310100"
+                logradouro: "Avenida Paulista"
+                numero: "1500"
+                complemento: "Loja 2"
+                bairro: "Bela Vista"
+                cidade: "São Paulo"
+                estado: "SP"
+                referencia: "Próximo ao hospital"
+      responses:
+        '200':
+          description: Loja atualizada com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LojaResponse'
+        '400':
+          description: Erro na atualização
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErroResponse'
+
+    delete:
+      tags: [Lojas]
+      summary: Desativar loja
+      description: Desativa uma loja (soft delete)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+          example: 1
+      responses:
+        '204':
+          description: Loja desativada com sucesso
+        '400':
+          description: Loja não encontrada ou não pertence ao administrador
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErroResponse'
+
+tags:
+  - name: Lojas
+    description: Gerenciamento de mini mercados de condomínio

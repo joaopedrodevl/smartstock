@@ -1,0 +1,42 @@
+@host = localhost:8080
+
+### ============================================
+### 2. Login Admin
+###    Retorna cookies: access_token (15min), refresh_token (7d)
+### ============================================
+POST {{host}}/token/admin
+Content-Type: application/json
+X-Api-Version: 1.0
+X-Request-Id: 123456
+
+{
+  "email": "joao@email.com",
+  "senha": "123456"
+}
+
+### ============================================
+### 3. Criar Admin
+###    Use o token obtido no passo 1 no header X-XSRF-TOKEN
+### ============================================
+POST {{host}}/admin
+Content-Type: application/json
+X-XSRF-TOKEN: <cole o token do passo 1>
+
+{
+  "nome": "joao",
+  "senha": "123456",
+  "email": "joao@email.com",
+  "telefone": "83988881222"
+}
+
+### ============================================
+### 4. Refresh Token
+###    Usa cookie refresh_token do login
+### ============================================
+POST {{host}}/token/refresh
+
+### ============================================
+### 5. Logout
+###    Revoga cookies access_token e refresh_token
+### ============================================
+POST {{host}}/token/logout

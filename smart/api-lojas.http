@@ -1,0 +1,106 @@
+### ============================================
+### SMARTSTOCK - MINI MERCADOS DE CONDOMÍNIO
+### ============================================
+### Pré-requisito: Fazer login antes e colar o cookie access_token abaixo
+
+@host = http://localhost:8080
+@accessToken = COLE_AQUI_SEU_ACCESS_TOKEN
+
+### ============================================
+### AUTENTICAÇÃO (fazer login primeiro)
+### ============================================
+
+### 1. Login do administrador
+# @name login
+POST {{host}}/token/admin
+Content-Type: application/json
+
+{
+  "email": "admin@smartstock.com",
+  "senha": "123456"
+}
+
+### ============================================
+### LOJAS
+### ============================================
+
+### 2. Criar loja (matriz)
+POST {{host}}/admin/lojas
+Content-Type: application/json
+Cookie: access_token={{accessToken}}
+
+{
+  "cnpj": "12345678000190",
+  "nomeFantasia": "Mini Mercado Condomínio Central",
+  "razaoSocial": "Mini Mercado Central LTDA",
+  "telefone": "11999998888",
+  "ehMatriz": true,
+  "endereco": {
+    "cep": "01310100",
+    "logradouro": "Avenida Paulista",
+    "numero": "1000",
+    "complemento": "Sala 1",
+    "bairro": "Bela Vista",
+    "cidade": "São Paulo",
+    "estado": "SP",
+    "referencia": "Em frente ao metrô"
+  }
+}
+
+### 3. Criar segunda loja (filial)
+POST {{host}}/admin/lojas
+Content-Type: application/json
+Cookie: access_token={{accessToken}}
+
+{
+  "cnpj": "98765432000110",
+  "nomeFantasia": "Mini Mercado Vila Nova",
+  "razaoSocial": "Mini Mercado Vila Nova LTDA",
+  "telefone": "11977776666",
+  "ehMatriz": false,
+  "endereco": {
+    "cep": "04547000",
+    "logradouro": "Rua Flórida",
+    "numero": "500",
+    "complemento": null,
+    "bairro": "Vila Olímpia",
+    "cidade": "São Paulo",
+    "estado": "SP",
+    "referencia": "Ao lado do banco"
+  }
+}
+
+### 4. Listar todas as lojas do administrador
+GET {{host}}/admin/lojas
+Cookie: access_token={{accessToken}}
+
+### 5. Buscar loja por ID
+GET {{host}}/admin/lojas/1
+Cookie: access_token={{accessToken}}
+
+### 6. Atualizar loja
+PUT {{host}}/admin/lojas/1
+Content-Type: application/json
+Cookie: access_token={{accessToken}}
+
+{
+  "cnpj": "12345678000190",
+  "nomeFantasia": "Mini Mercado Condomínio Central - Atualizado",
+  "razaoSocial": "Mini Mercado Central LTDA",
+  "telefone": "11988887777",
+  "ehMatriz": true,
+  "endereco": {
+    "cep": "01310100",
+    "logradouro": "Avenida Paulista",
+    "numero": "1500",
+    "complemento": "Loja 2",
+    "bairro": "Bela Vista",
+    "cidade": "São Paulo",
+    "estado": "SP",
+    "referencia": "Próximo ao hospital"
+  }
+}
+
+### 7. Desativar loja
+DELETE {{host}}/admin/lojas/2
+Cookie: access_token={{accessToken}}
