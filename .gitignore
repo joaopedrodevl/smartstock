@@ -1,0 +1,18 @@
+# Chaves e segredos
+**/app.key
+**/app.pub
+**/*.pem
+**/*.p12
+**/*.pfx
+**/*.jks
+**/*.keystore
+
+# Variáveis de ambiente
+.env
+.env.*
+**/.env
+**/.env.*
+!.env.example
+
+# IDE
+.idea/

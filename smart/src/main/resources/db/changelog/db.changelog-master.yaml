@@ -1,0 +1,102 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0
+      author: João Pedro
+      changes:
+        - sqlFile:
+            path: db/changelog/sql/001-criar-tabela-usuarios.sql
+            encoding: UTF-8
+            relativeToChangelogFile: false
+            splitStatements: false
+            stripComments: false
+            endDelimiter: ";"
+  - changeSet:
+      id: 1
+      author: João Pedro
+      changes:
+        - sqlFile:
+            path: db/changelog/sql/002-seed-admin-inicial.sql
+            encoding: UTF-8
+            relativeToChangelogFile: false
+            splitStatements: true
+            stripComments: false
+  - changeSet:
+      id: 2
+      author: João Pedro
+      changes:
+        - sqlFile:
+            path: db/changelog/sql/003-adicionar-public-id.sql
+            encoding: UTF-8
+            relativeToChangelogFile: false
+            splitStatements: true
+            stripComments: false
+  - changeSet:
+      id: 3
+      author: smartstock
+      changes:
+        - sqlFile:
+            path: db/changelog/sql/004-criar-tabela-embarcados.sql
+            encoding: UTF-8
+            relativeToChangelogFile: false
+            splitStatements: true
+            stripComments: false
+  - changeSet:
+      id: 4
+      author: smartstock
+      changes:
+        - sqlFile:
+            path: db/changelog/sql/005-criar-tabelas-rfid-vendas.sql
+            encoding: UTF-8
+            relativeToChangelogFile: false
+            splitStatements: true
+            stripComments: false
+  - changeSet:
+      id: 5
+      author: smartstock
+      changes:
+        - sqlFile:
+            path: db/changelog/sql/006-adicionar-public-id-vendas.sql
+            encoding: UTF-8
+            relativeToChangelogFile: false
+            splitStatements: true
+            stripComments: false
+  - changeSet:
+      id: 6
+      author: smartstock
+      changes:
+        - sqlFile:
+            path: db/changelog/sql/007-adicionar-role-admin.sql
+            encoding: UTF-8
+            relativeToChangelogFile: false
+            splitStatements: true
+            stripComments: false
+  - changeSet:
+      id: 7
+      author: smartstock
+      changes:
+        - sqlFile:
+            path: db/changelog/sql/008-adicionar-data-validade-produto.sql
+            encoding: UTF-8
+            relativeToChangelogFile: false
+            splitStatements: true
+            stripComments: false
+  - changeSet:
+      id: 8
+      author: smartstock
+      changes:
+        - sqlFile:
+            path: db/changelog/sql/009-migrar-dinheiro-centavos.sql
+            encoding: UTF-8
+            relativeToChangelogFile: false
+            splitStatements: true
+            stripComments: false
+  - changeSet:
+      id: 9
+      author: smartstock
+      changes:
+        - sqlFile:
+            path: db/changelog/sql/010-venda-admin-por-loja.sql
+            encoding: UTF-8
+            relativeToChangelogFile: false
+            splitStatements: true
+            stripComments: false

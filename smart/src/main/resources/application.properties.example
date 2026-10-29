@@ -1,0 +1,27 @@
+spring.application.name=smart
+spring.profiles.active=dev
+
+spring.security.oauth2.resourceserver.jwt.secret-key="123456"
+
+spring.datasource.url=jdbc:postgresql://localhost:5432/mydatabase
+spring.datasource.username=myuser
+spring.datasource.password=secret
+spring.datasource.driver-class-name=org.postgresql.Driver
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect
+
+jwt.private.key: classpath:app.key
+jwt.public.key: classpath:app.pub
+
+jwtTokens.cookie.secure=false
+
+logging.level.org.springframework.security=DEBUG
+
+# SpringDoc / Swagger UI
+springdoc.swagger-ui.path=/swagger-ui.html
+springdoc.swagger-ui.tags-sorter=alpha
+springdoc.api-docs.path=/v3/api-docs
+springdoc.packages-to-scan=br.com.smartstock.smartstock.infra.api.controllers
+
+# Devtools - incluir WebSocket no restart
+spring.devtools.restart.additional-paths=org.springframework.web.socket.**
